@@ -1,45 +1,33 @@
 import NextAuth from "next-auth";
 import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
 import { authConfig } from "@/lib/auth.config";
 
 const { auth } = NextAuth(authConfig);
 
-export async function proxy(request: NextRequest) {
-  const session = await auth();
-  const { pathname } = request.nextUrl;
+const PUBLIC_ROUTES = ["/signin", "/signup"];
 
-  const isPublicRoute =
-    pathname.startsWith("/signin") ||
-    pathname.startsWith("/signup") ||
-    pathname.startsWith("/api/auth") ||
-    pathname.startsWith("/_next") ||
-    pathname === "/";
+export default auth((req) => {
+  const { nextUrl } = req;
+  const isLoggedIn = Boolean(req.auth);
+  const isPublicRoute = PUBLIC_ROUTES.some((route) => nextUrl.pathname.startsWith(route));
 
-  const isProtectedAppRoute =
-    pathname === "/dashboard" ||
-    pathname.startsWith("/calendar") ||
-    pathname.startsWith("/patients") ||
-    pathname.startsWith("/appointments") ||
-    pathname.startsWith("/manage");
-
-  if (isPublicRoute) {
-    if ((pathname.startsWith("/signin") || pathname.startsWith("/signup")) && session?.user) {
-      return NextResponse.redirect(new URL("/dashboard", request.url));
-    }
-
-    return NextResponse.next();
-  }
-
-  if (isProtectedAppRoute && !session?.user) {
-    const signInUrl = new URL("/signin", request.url);
-    signInUrl.searchParams.set("callbackUrl", request.nextUrl.href);
+  if (!isLoggedIn && !isPublicRoute) {
+    const signInUrl = new URL("/signin", nextUrl);
+    signInUrl.searchParams.set("callbackUrl", nextUrl.pathname);
     return NextResponse.redirect(signInUrl);
   }
 
+  if (isLoggedIn && isPublicRoute) {
+    return NextResponse.redirect(new URL("/dashboard", nextUrl));
+  }
+
   return NextResponse.next();
-}
+});
 
 export const config = {
-  matcher: ["/((?!api/auth|_next/static|_next/image|favicon.ico).*)"],
+  // Exclude Next internals, static assets, AND Auth.js's own API routes
+  // (api/auth/*) — those must always be reachable directly, unauthenticated,
+  // or signIn()/signOut()/getSession() break, since they call these endpoints
+  // themselves before a session exists.
+  matcher: ["/((?!_next/static|_next/image|favicon.ico|api/auth|.*\\.png$|.*\\.svg$).*)"],
 };
