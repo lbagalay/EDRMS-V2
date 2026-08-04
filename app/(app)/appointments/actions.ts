@@ -174,5 +174,5 @@ export async function getBookedTimes(date: string, excludeAppointmentId?: number
     select: { timeSchedule: true },
   });
 
-  return appts.map((a) => a.timeSchedule.toISOString().slice(11, 16));
+  return appts.map((a: { timeSchedule: Date }) => a.timeSchedule.toISOString().slice(11, 16));
 }
