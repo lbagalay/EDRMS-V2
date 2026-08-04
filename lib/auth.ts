@@ -153,6 +153,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
+        const t0 = Date.now();
+
         if (!credentials?.username || !credentials.password) {
           return null;
         }
@@ -175,19 +177,24 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             isActive: true,
           },
         });
+        console.log(`[auth] DB lookup took ${Date.now() - t0}ms`);
 
         if (!account || !account.isActive) {
           return null;
         }
 
+        const t1 = Date.now();
         const passwordMatches = await bcrypt.compare(
           String(credentials.password),
           account.password,
         );
+        console.log(`[auth] bcrypt compare took ${Date.now() - t1}ms`);
 
         if (!passwordMatches) {
           return null;
         }
+
+        console.log(`[auth] total authorize took ${Date.now() - t0}ms`);
 
         return {
           id: account.accountId.toString(),
