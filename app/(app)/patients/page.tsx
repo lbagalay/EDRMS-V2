@@ -127,8 +127,11 @@ export default async function PatientsPage({
                   </td>
                 </tr>
               ) : (
-                patients.map((patient) => {
-                  const outstandingBalance = patient.visits.reduce((sum, v) => sum + computeVisitBalance(v), 0);
+                patients.map((patient: (typeof patients)[number]) => {
+                  const outstandingBalance = patient.visits.reduce(
+                    (sum: number, v: (typeof patient.visits)[number]) => sum + computeVisitBalance(v),
+                    0,
+                  );
                   return (
                     <tr key={patient.patientId} className="hover:bg-[#F8FBFD]">
                       <td className="px-4 py-4">

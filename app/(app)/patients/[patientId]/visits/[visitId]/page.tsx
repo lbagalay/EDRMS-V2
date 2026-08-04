@@ -48,7 +48,7 @@ export default async function VisitDetailPage({
 
         <div className="mt-4 grid gap-3 sm:grid-cols-2">
           <div className="space-y-2 text-sm text-slate-700">
-            <p><span className="font-medium text-slate-900">Treatments:</span> {visit.treatmentRendered.map((tr) => tr.treatment.treatmentName).join(", ") || "—"}</p>
+            <p><span className="font-medium text-slate-900">Treatments:</span> {visit.treatmentRendered.map((tr: (typeof visit.treatmentRendered)[number]) => tr.treatment.treatmentName).join(", ") || "—"}</p>
             <p><span className="font-medium text-slate-900">Prescription:</span> {visit.prescription || "—"}</p>
             <p><span className="font-medium text-slate-900">Notes:</span> {visit.notes || "—"}</p>
           </div>
@@ -76,7 +76,7 @@ export default async function VisitDetailPage({
               </tr>
             </thead>
             <tbody>
-              {visit.vitalSigns.map((vs) => (
+              {visit.vitalSigns.map((vs: (typeof visit.vitalSigns)[number]) => (
                 <tr key={vs.vitalSignId} className="border-b border-slate-100">
                   <td className="py-2">{vs.timeTaken.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</td>
                   <td className="py-2">{Number(vs.temperature).toFixed(1)}</td>

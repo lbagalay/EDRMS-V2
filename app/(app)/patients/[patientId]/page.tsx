@@ -84,7 +84,7 @@ export default async function PatientDetailPage({
           <p className="mt-2 text-sm leading-6 text-slate-600">No visits recorded yet.</p>
         ) : (
           <div className="mt-4 space-y-3">
-            {patient.visits.map((v: (typeof patient.visits)[number]) => {
+            {patient.visits.map((v) => {
               const balance = computeVisitBalance(v);
               return (
                 <Link
@@ -174,7 +174,7 @@ export default async function PatientDetailPage({
           <p className="mt-2 text-sm leading-6 text-slate-600">No appointments on record.</p>
         ) : (
           <div className="mt-4 space-y-3">
-            {patient.appointments.map((a: (typeof patient.appointments)[number]) => (
+            {patient.appointments.map((a) => (
               <div key={a.appointmentId} className="flex items-center justify-between rounded-2xl border border-[#D8E8EE] px-4 py-3 text-sm">
                 <span>
                   {a.dateSchedule.toLocaleDateString()} · {a.timeSchedule.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} — {a.purpose}

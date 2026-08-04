@@ -13,7 +13,7 @@ export default async function TreatmentsPage() {
         </p>
       </section>
 
-      <TreatmentsTable treatments={treatments.map((t) => ({ ...t, treatmentFee: Number(t.treatmentFee) }))} />
+      <TreatmentsTable treatments={treatments.map((t: (typeof treatments)[number]) => ({ ...t, treatmentFee: Number(t.treatmentFee) }))} />
     </main>
   );
 }
