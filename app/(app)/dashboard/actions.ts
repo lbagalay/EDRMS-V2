@@ -29,7 +29,7 @@ export async function getTodaysAppointments() {
   console.log(
     "DEBUG dashboard — range start:", start.toISOString(),
     "| range end:", end.toISOString(),
-    "| last 10 appointment dates in DB:", allAppts.map((a) => ({ id: a.appointmentId, name: a.name, date: a.dateSchedule.toISOString() })),
+    "| last 10 appointment dates in DB:", allAppts.map((a: (typeof allAppts)[number]) => ({ id: a.appointmentId, name: a.name, date: a.dateSchedule.toISOString() })),
   );
 
   const appointments = await db.appointment.findMany({

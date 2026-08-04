@@ -46,7 +46,7 @@ export default async function AppointmentsPage() {
               </tr>
             </thead>
             <tbody>
-              {appointments.map((a) => (
+              {appointments.map((a: (typeof appointments)[number]) => (
                 <tr key={a.appointmentId} className="border-b border-slate-100">
                   <td className="py-2">{a.name}</td>
                   <td className="py-2">{a.dateSchedule.toLocaleDateString("en-US", { timeZone: "UTC" })}</td>
