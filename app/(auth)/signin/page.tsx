@@ -12,11 +12,23 @@ export default function SignInPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [showSlowMessage, setShowSlowMessage] = useState(false);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     setCallbackUrl(params.get("callbackUrl") ?? "/dashboard");
   }, []);
+
+  // Show a reassuring message if the request takes a beat longer than expected
+  useEffect(() => {
+    if (!isLoading) {
+      setShowSlowMessage(false);
+      return;
+    }
+
+    const timer = setTimeout(() => setShowSlowMessage(true), 700);
+    return () => clearTimeout(timer);
+  }, [isLoading]);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -61,7 +73,8 @@ export default function SignInPage() {
               value={username}
               onChange={(event) => setUsername(event.target.value)}
               required
-              className="mt-2 w-full rounded-2xl border border-[#D8E8EE] bg-[#F8FAFB] px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-[#189AB4] focus:ring-2 focus:ring-[#189AB4]/20"
+              disabled={isLoading}
+              className="mt-2 w-full rounded-2xl border border-[#D8E8EE] bg-[#F8FAFB] px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-[#189AB4] focus:ring-2 focus:ring-[#189AB4]/20 disabled:opacity-60"
             />
           </div>
 
@@ -72,7 +85,8 @@ export default function SignInPage() {
               value={password}
               onChange={(event) => setPassword(event.target.value)}
               required
-              className="mt-2 w-full rounded-2xl border border-[#D8E8EE] bg-[#F8FAFB] px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-[#189AB4] focus:ring-2 focus:ring-[#189AB4]/20"
+              disabled={isLoading}
+              className="mt-2 w-full rounded-2xl border border-[#D8E8EE] bg-[#F8FAFB] px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-[#189AB4] focus:ring-2 focus:ring-[#189AB4]/20 disabled:opacity-60"
             />
           </div>
 
@@ -81,10 +95,42 @@ export default function SignInPage() {
           <button
             type="submit"
             disabled={isLoading}
-            className="inline-flex w-full items-center justify-center rounded-full bg-[#6ED178] px-5 py-3 text-sm font-medium text-white transition hover:bg-[#56b765] disabled:cursor-not-allowed disabled:opacity-60"
+            className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-[#6ED178] px-5 py-3 text-sm font-medium text-white transition hover:bg-[#56b765] disabled:cursor-not-allowed disabled:opacity-80"
           >
-            {isLoading ? "Signing in..." : "Log in"}
+            {isLoading ? (
+              <>
+                <svg
+                  className="h-4 w-4 animate-spin text-white"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  />
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                  />
+                </svg>
+                Signing in...
+              </>
+            ) : (
+              "Log in"
+            )}
           </button>
+
+          {showSlowMessage ? (
+            <p className="text-center text-xs text-slate-400">
+              Connecting to the database — this can take a moment on first load.
+            </p>
+          ) : null}
         </form>
       </div>
     </main>
