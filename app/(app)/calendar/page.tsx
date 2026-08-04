@@ -102,7 +102,7 @@ export default async function CalendarPage({ searchParams }: { searchParams?: Pr
             {upcoming.length === 0 ? (
               <p className="text-sm text-slate-500">No upcoming appointments.</p>
             ) : (
-              upcoming.map((appt, idx) => (
+              upcoming.map((appt: (typeof upcoming)[number], idx: number) => (
                 <Link
                   key={appt.appointmentId}
                   href={`/appointments/${appt.appointmentId}`}

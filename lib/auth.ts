@@ -13,6 +13,7 @@ function mapAccountToAdapterUser(account: {
   email: string | null;
   firstName: string | null;
   lastName: string | null;
+  role: AdapterUser["role"];
 }): AdapterUser {
   return {
     id: account.accountId.toString(),
@@ -20,6 +21,7 @@ function mapAccountToAdapterUser(account: {
     email: account.email ?? account.username,
     emailVerified: null,
     image: null,
+    role: account.role,
   };
 }
 
