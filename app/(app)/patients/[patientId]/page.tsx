@@ -34,7 +34,10 @@ export default async function PatientDetailPage({
   }
 
   const treatments = await listTreatmentOptions();
-  const totalOutstanding = patient.visits.reduce((sum: number, v: (typeof patient.visits)[number]) => sum + computeVisitBalance(v), 0);
+  const totalOutstanding = patient.visits.reduce(
+    (sum: number, v: (typeof patient.visits)[number]) => sum + computeVisitBalance(v),
+    0,
+  );
 
   return (
     <main className="space-y-6">
@@ -84,7 +87,7 @@ export default async function PatientDetailPage({
           <p className="mt-2 text-sm leading-6 text-slate-600">No visits recorded yet.</p>
         ) : (
           <div className="mt-4 space-y-3">
-            {patient.visits.map((v) => {
+            {patient.visits.map((v: (typeof patient.visits)[number]) => {
               const balance = computeVisitBalance(v);
               return (
                 <Link
@@ -97,7 +100,7 @@ export default async function PatientDetailPage({
                     <span className="text-slate-500">{v.dateVisit.toLocaleDateString()}</span>
                   </div>
                   <div className="mt-1 flex flex-wrap gap-2 text-slate-600">
-                    {v.treatmentRendered.map((tr) => (
+                    {v.treatmentRendered.map((tr: (typeof v.treatmentRendered)[number]) => (
                       <span key={tr.id} className="rounded-full bg-[#F0F0F0] px-2 py-0.5 text-xs">
                         {tr.treatment.treatmentName}
                       </span>
@@ -127,7 +130,7 @@ export default async function PatientDetailPage({
             <div>
               <label className="block text-sm font-medium text-slate-700">Treatments rendered</label>
               <div className="mt-2 grid gap-2 sm:grid-cols-2">
-                {treatments.map((t) => (
+                {treatments.map((t: (typeof treatments)[number]) => (
                   <label key={t.treatmentId} className="flex items-center gap-2 rounded-2xl border border-[#D8E8EE] px-4 py-2 text-sm">
                     <input type="checkbox" name="treatmentIds" value={t.treatmentId} className="h-4 w-4 rounded border-slate-300" />
                     {t.treatmentName} — ₱{Number(t.treatmentFee).toFixed(2)}
@@ -174,7 +177,7 @@ export default async function PatientDetailPage({
           <p className="mt-2 text-sm leading-6 text-slate-600">No appointments on record.</p>
         ) : (
           <div className="mt-4 space-y-3">
-            {patient.appointments.map((a) => (
+            {patient.appointments.map((a: (typeof patient.appointments)[number]) => (
               <div key={a.appointmentId} className="flex items-center justify-between rounded-2xl border border-[#D8E8EE] px-4 py-3 text-sm">
                 <span>
                   {a.dateSchedule.toLocaleDateString()} · {a.timeSchedule.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} — {a.purpose}
