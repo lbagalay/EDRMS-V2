@@ -34,7 +34,7 @@ export default async function PatientDetailPage({
   }
 
   const treatments = await listTreatmentOptions();
-  const totalOutstanding = patient.visits.reduce((sum: number, v: (typeof patient.visits)[number]) => sum + computeVisitBalance(v), 0);
+  const totalOutstanding = patient.visits.reduce((sum, v) => sum + computeVisitBalance(v), 0);
 
   return (
     <main className="space-y-6">
