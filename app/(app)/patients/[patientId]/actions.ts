@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/db";
 import { requireSession } from "@/lib/authorize";
 import { visitFormSchema } from "@/lib/validators/visit";
@@ -45,7 +46,7 @@ export async function createVisit(patientId: number, formData: FormData) {
     throw new Error("One or more selected treatments could not be found");
   }
 
-  await prisma.$transaction(async (tx) => {
+  await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
     const visit = await tx.visit.create({
       data: {
         patientId,
@@ -60,7 +61,7 @@ export async function createVisit(patientId: number, formData: FormData) {
     });
 
     await tx.treatmentRendered.createMany({
-      data: treatments.map((t) => ({
+      data: treatments.map((t: (typeof treatments)[number]) => ({
         visitId: visit.visitId,
         treatmentId: t.treatmentId,
         feeAtTime: t.treatmentFee,
