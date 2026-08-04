@@ -28,18 +28,18 @@ export const authConfig = {
     async jwt({ token, user }) {
       if (user) {
         token.sub = user.id;
-        token.role = (user as any).role;
-        token.firstName = (user as any).firstName;
-        token.lastName = (user as any).lastName;
+        token.role = user.role;
+        token.firstName = user.firstName;
+        token.lastName = user.lastName;
       }
       return token;
     },
     async session({ session, token }) {
       if (session.user) {
         session.user.id = token.sub as string;
-        (session.user as any).role = token.role;
-        (session.user as any).firstName = token.firstName;
-        (session.user as any).lastName = token.lastName;
+        session.user.role = token.role;
+        session.user.firstName = token.firstName;
+        session.user.lastName = token.lastName;
       }
       return session;
     },
