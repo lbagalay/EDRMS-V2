@@ -1,148 +1,148 @@
-generator client {
-  provider = "prisma-client-js"
-}
+  generator client {
+    provider = "prisma-client-js"
+  }
 
-datasource db {
-  provider = "mysql"
-}
+  datasource db {
+    provider = "mysql"
+  }
 
-enum Role {
-  ADMIN
-  STAFF
-  RECEPTIONIST
-}
+  enum Role {
+    ADMIN
+    STAFF
+    RECEPTIONIST
+  }
 
-enum Sex {
-  MALE
-  FEMALE
-  OTHER
-  PREFER_NOT_TO_SAY
-}
+  enum Sex {
+    MALE
+    FEMALE
+    OTHER
+    PREFER_NOT_TO_SAY
+  }
 
-enum Status {
-  SCHEDULED
-  CONFIRMED
-  CANCELLED
-  COMPLETED
-  NO_SHOW
-}
+  enum Status {
+    SCHEDULED
+    CONFIRMED
+    CANCELLED
+    COMPLETED
+    NO_SHOW
+  }
 
-model Account {
-  accountId   Int       @id @default(autoincrement()) @map("account_id")
-  username    String    @unique @db.VarChar(255)
-  email       String?   @unique @db.VarChar(255)
-  password    String    @db.VarChar(255)
-  firstName   String?   @map("first_name") @db.VarChar(255)
-  middleName  String?   @map("middle_name") @db.VarChar(255)
-  lastName    String?   @map("last_name") @db.VarChar(255)
-  birthdate   DateTime? @db.Date
-  role        Role      @default(STAFF)
-  isActive    Boolean   @default(true) @map("is_active")
-  createdAt   DateTime  @default(now()) @map("created_at")
-  updatedAt   DateTime  @updatedAt @map("updated_at")
-  sessions    Session[]
+  model Account {
+    accountId   Int       @id @default(autoincrement()) @map("account_id")
+    username    String    @unique @db.VarChar(255)
+    email       String?   @unique @db.VarChar(255)
+    password    String    @db.VarChar(255)
+    firstName   String?   @map("first_name") @db.VarChar(255)
+    middleName  String?   @map("middle_name") @db.VarChar(255)
+    lastName    String?   @map("last_name") @db.VarChar(255)
+    birthdate   DateTime? @db.Date
+    role        Role      @default(STAFF)
+    isActive    Boolean   @default(true) @map("is_active")
+    createdAt   DateTime  @default(now()) @map("created_at")
+    updatedAt   DateTime  @updatedAt @map("updated_at")
+    sessions    Session[]
 
-  @@map("account")
-}
+    @@map("account")
+  }
 
-model Session {
-  id           Int      @id @default(autoincrement())
-  sessionToken String   @unique @map("session_token") @db.VarChar(255)
-  userId       Int      @map("user_id")
-  expires      DateTime @db.DateTime(0)
-  user         Account  @relation(fields: [userId], references: [accountId], onDelete: Cascade)
+  model Session {
+    id           Int      @id @default(autoincrement())
+    sessionToken String   @unique @map("session_token") @db.VarChar(255)
+    userId       Int      @map("user_id")
+    expires      DateTime @db.DateTime(0)
+    user         Account  @relation(fields: [userId], references: [accountId], onDelete: Cascade)
 
-  @@map("session")
-}
+    @@map("session")
+  }
 
-model Patient {
-  patientId       Int           @id @default(autoincrement()) @map("patient_id")
-  lastName        String        @map("last_name") @db.VarChar(255)
-  firstName       String        @map("first_name") @db.VarChar(255)
-  middleName      String?       @map("middle_name") @db.VarChar(255)
-  birthdate       DateTime?     @db.Date
-  sex             Sex?
-  contactNumber   String?       @map("contact_number") @db.VarChar(255)
-  email           String?       @db.VarChar(255)
-  address         String?       @db.VarChar(255)
-  medicalAlerts   String?       @map("medical_alerts") @db.Text
-  isDeleted       Boolean       @default(false) @map("is_deleted")
-  createdAt       DateTime      @default(now()) @map("created_at")
-  updatedAt       DateTime      @updatedAt @map("updated_at")
-  appointments    Appointment[]
-  visits          Visit[]
+  model Patient {
+    patientId       Int           @id @default(autoincrement()) @map("patient_id")
+    lastName        String        @map("last_name") @db.VarChar(255)
+    firstName       String        @map("first_name") @db.VarChar(255)
+    middleName      String?       @map("middle_name") @db.VarChar(255)
+    birthdate       DateTime?     @db.Date
+    sex             Sex?
+    contactNumber   String?       @map("contact_number") @db.VarChar(255)
+    email           String?       @db.VarChar(255)
+    address         String?       @db.VarChar(255)
+    medicalAlerts   String?       @map("medical_alerts") @db.Text
+    isDeleted       Boolean       @default(false) @map("is_deleted")
+    createdAt       DateTime      @default(now()) @map("created_at")
+    updatedAt       DateTime      @updatedAt @map("updated_at")
+    appointments    Appointment[]
+    visits          Visit[]
 
-  @@map("patient")
-}
+    @@map("patient")
+  }
 
-model Appointment {
-  appointmentId     Int       @id @default(autoincrement()) @map("appointment_id")
-  patientId         Int?      @map("patient_id")
-  name              String    @db.VarChar(255)
-  contactNumber     String    @map("contact_number") @db.VarChar(255)
-  dateSchedule      DateTime  @map("date_schedule") @db.Date
-  timeSchedule      DateTime  @map("time_schedule") @db.Time(0)
-  purpose           String    @db.Text
-  isPreviousPatient Boolean   @default(false) @map("is_previous_patient")
-  status            Status    @default(SCHEDULED)
-  createdAt         DateTime  @default(now()) @map("created_at")
-  updatedAt         DateTime  @updatedAt @map("updated_at")
-  patient           Patient?  @relation(fields: [patientId], references: [patientId], onDelete: SetNull)
+  model Appointment {
+    appointmentId     Int       @id @default(autoincrement()) @map("appointment_id")
+    patientId         Int?      @map("patient_id")
+    name              String    @db.VarChar(255)
+    contactNumber     String    @map("contact_number") @db.VarChar(255)
+    dateSchedule      DateTime  @map("date_schedule") @db.Date
+    timeSchedule      DateTime  @map("time_schedule") @db.Time(0)
+    purpose           String    @db.Text
+    isPreviousPatient Boolean   @default(false) @map("is_previous_patient")
+    status            Status    @default(SCHEDULED)
+    createdAt         DateTime  @default(now()) @map("created_at")
+    updatedAt         DateTime  @updatedAt @map("updated_at")
+    patient           Patient?  @relation(fields: [patientId], references: [patientId], onDelete: SetNull)
 
-  @@map("appointment")
-}
+    @@map("appointment")
+  }
 
-model Visit {
-  visitId           Int                @id @default(autoincrement()) @map("visit_id")
-  patientId         Int                @map("patient_id")
-  visitPurpose      String             @map("visit_purpose") @db.VarChar(255)
-  dateVisit         DateTime           @map("date_visit") @db.Date
-  additionalFees    Decimal            @map("additional_fees") @db.Decimal(10, 2)
-  amountPaid        Decimal            @map("amount_paid") @db.Decimal(10, 2)
-  discount          Decimal            @db.Decimal(10, 2)
-  prescription      String?            @db.Text
-  notes             String?            @db.Text
-  isDeleted         Boolean            @default(false) @map("is_deleted")
-  createdAt         DateTime           @default(now()) @map("created_at")
-  updatedAt         DateTime           @updatedAt @map("updated_at")
-  patient           Patient            @relation(fields: [patientId], references: [patientId], onDelete: Cascade)
-  treatmentRendered TreatmentRendered[]
-  vitalSigns        VitalSigns[]
+  model Visit {
+    visitId           Int                @id @default(autoincrement()) @map("visit_id")
+    patientId         Int                @map("patient_id")
+    visitPurpose      String             @map("visit_purpose") @db.VarChar(255)
+    dateVisit         DateTime           @map("date_visit") @db.Date
+    additionalFees    Decimal            @map("additional_fees") @db.Decimal(10, 2)
+    amountPaid        Decimal            @map("amount_paid") @db.Decimal(10, 2)
+    discount          Decimal            @db.Decimal(10, 2)
+    prescription      String?            @db.Text
+    notes             String?            @db.Text
+    isDeleted         Boolean            @default(false) @map("is_deleted")
+    createdAt         DateTime           @default(now()) @map("created_at")
+    updatedAt         DateTime           @updatedAt @map("updated_at")
+    patient           Patient            @relation(fields: [patientId], references: [patientId], onDelete: Cascade)
+    treatmentRendered TreatmentRendered[]
+    vitalSigns        VitalSigns[]
 
-  @@map("visit")
-}
+    @@map("visit")
+  }
 
-model Treatment {
-  treatmentId       Int                @id @default(autoincrement()) @map("treatment_id")
-  treatmentName     String             @map("treatment_name") @db.VarChar(255)
-  treatmentFee      Decimal            @map("treatment_fee") @db.Decimal(10, 2)
-  isActive          Boolean            @default(true) @map("is_active")
-  renderedTreatments TreatmentRendered[]
+  model Treatment {
+    treatmentId       Int                @id @default(autoincrement()) @map("treatment_id")
+    treatmentName     String             @map("treatment_name") @db.VarChar(255)
+    treatmentFee      Decimal            @map("treatment_fee") @db.Decimal(10, 2)
+    isActive          Boolean            @default(true) @map("is_active")
+    renderedTreatments TreatmentRendered[]
 
-  @@map("treatment")
-}
+    @@map("treatment")
+  }
 
-model TreatmentRendered {
-  id          Int       @id @default(autoincrement())
-  visitId     Int       @map("visit_id")
-  treatmentId Int       @map("treatment_id")
-  feeAtTime   Decimal?  @map("fee_at_time") @db.Decimal(10, 2)
-  visit       Visit     @relation(fields: [visitId], references: [visitId], onDelete: Cascade)
-  treatment   Treatment @relation(fields: [treatmentId], references: [treatmentId], onDelete: Cascade)
+  model TreatmentRendered {
+    id          Int       @id @default(autoincrement())
+    visitId     Int       @map("visit_id")
+    treatmentId Int       @map("treatment_id")
+    feeAtTime   Decimal?  @map("fee_at_time") @db.Decimal(10, 2)
+    visit       Visit     @relation(fields: [visitId], references: [visitId], onDelete: Cascade)
+    treatment   Treatment @relation(fields: [treatmentId], references: [treatmentId], onDelete: Cascade)
 
-  @@map("treatment_rendered")
-}
+    @@map("treatment_rendered")
+  }
 
-model VitalSigns {
-  vitalSignId   Int      @id @default(autoincrement()) @map("vital_sign_id")
-  visitId       Int      @map("visit_id")
-  temperature   Decimal  @db.Decimal(4, 1)
-  pulseRate     Int      @map("pulse_rate")
-  systolicBp    Int      @map("systolic_bp")
-  diastolicBp   Int      @map("diastolic_bp")
-  timeTaken     DateTime @map("time_taken") @db.Time(0)
-  isDeleted     Boolean  @default(false) @map("is_deleted")
-  visit         Visit    @relation(fields: [visitId], references: [visitId], onDelete: Cascade)
+  model VitalSigns {
+    vitalSignId   Int      @id @default(autoincrement()) @map("vital_sign_id")
+    visitId       Int      @map("visit_id")
+    temperature   Decimal  @db.Decimal(4, 1)
+    pulseRate     Int      @map("pulse_rate")
+    systolicBp    Int      @map("systolic_bp")
+    diastolicBp   Int      @map("diastolic_bp")
+    timeTaken     DateTime @map("time_taken") @db.Time(0)
+    isDeleted     Boolean  @default(false) @map("is_deleted")
+    visit         Visit    @relation(fields: [visitId], references: [visitId], onDelete: Cascade)
 
-  @@map("vital_signs")
-}
+    @@map("vital_signs")
+  }
