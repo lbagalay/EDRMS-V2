@@ -22,6 +22,8 @@ function mapAccountToAdapterUser(account: {
     emailVerified: null,
     image: null,
     role: account.role,
+    firstName: account.firstName,
+    lastName: account.lastName,
   };
 }
 

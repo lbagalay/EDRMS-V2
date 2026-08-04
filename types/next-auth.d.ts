@@ -21,6 +21,8 @@ declare module "next-auth" {
 declare module "next-auth/adapters" {
   interface AdapterUser extends DefaultAdapterUser {
     role: Role;
+    firstName: string | null | undefined;
+    lastName: string | null | undefined;
   }
 }
 
