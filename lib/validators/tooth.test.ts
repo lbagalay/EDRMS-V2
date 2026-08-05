@@ -19,6 +19,22 @@ describe("toothConditionFormSchema", () => {
     });
     expect(result.success).toBe(false);
   });
+
+  it("accepts a valid primary tooth number", () => {
+    const result = toothConditionFormSchema.safeParse({
+      toothNumber: "51",
+      condition: "HEALTHY",
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it("rejects an out-of-range tooth number", () => {
+    const result = toothConditionFormSchema.safeParse({
+      toothNumber: "99",
+      condition: "HEALTHY",
+    });
+    expect(result.success).toBe(false);
+  });
 });
 
 describe("toothTreatmentFormSchema", () => {
@@ -35,6 +51,24 @@ describe("toothTreatmentFormSchema", () => {
     const result = toothTreatmentFormSchema.safeParse({
       toothNumber: "16",
       treatmentId: "",
+      status: "PLANNED",
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it("accepts a valid primary tooth number", () => {
+    const result = toothTreatmentFormSchema.safeParse({
+      toothNumber: "51",
+      treatmentId: "3",
+      status: "PLANNED",
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it("rejects an out-of-range tooth number", () => {
+    const result = toothTreatmentFormSchema.safeParse({
+      toothNumber: "99",
+      treatmentId: "3",
       status: "PLANNED",
     });
     expect(result.success).toBe(false);
