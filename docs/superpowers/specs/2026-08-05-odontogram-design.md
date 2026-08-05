@@ -6,10 +6,24 @@ Status: Approved, pending implementation plan
 ## Objective
 
 Implement an interactive odontogram in EDRMS-V2: a clickable/hoverable tooth
-chart on the patient detail view that shows per-tooth condition, treatment
-history, dentist notes, and planned procedures, and automatically switches
-between primary (20 teeth), mixed, and permanent (32 teeth) dentition based
-on the patient's age (with manual override).
+chart, reachable from the patient detail view, that shows per-tooth
+condition, treatment history, dentist notes, and planned procedures, and
+automatically switches between primary (20 teeth), mixed, and permanent (32
+teeth) dentition based on the patient's age (with manual override).
+
+## Placement / entry point
+
+The odontogram lives on its own page, not inline on the patient detail page.
+
+- Patient detail page (`app/(app)/patients/[patientId]/page.tsx`) gets a new
+  "Odontogram" button/link alongside the existing sections, navigating to
+  `/patients/[patientId]/odontogram` — a new route following the same
+  pattern already used for `/patients/[patientId]/visits/[visitId]`.
+- That new page fetches the patient + tooth data itself and renders
+  `<Odontogram>`. The main patient page query is untouched.
+- Rationale: the chart plus per-tooth details dialog is enough UI surface to
+  want its own page rather than a section on an already-dense patient page,
+  and it avoids nesting the tooth-details `Dialog` inside another modal.
 
 ## Source asset
 
@@ -147,11 +161,12 @@ real `visit` = completed tooth-specific treatment; `toothNumber` set +
 
 ## Data flow
 
-- The patient detail server component (`app/(app)/patients/[patientId]/page.tsx`)
-  extends its existing `prisma.patient.findUnique` query to include
-  `toothRecords` and tooth-linked `treatmentRendered`, computes
-  `dentitionType` from `patient.birthdate`, and passes everything to
-  `<Odontogram>` as props.
+- The new `app/(app)/patients/[patientId]/odontogram/page.tsx` server
+  component fetches the patient plus `toothRecords` and tooth-linked
+  `treatmentRendered` via its own `prisma.patient.findUnique` query,
+  computes `dentitionType` from `patient.birthdate`, and passes everything
+  to `<Odontogram>` as props. The existing patient detail page query is
+  unchanged, aside from adding the "Odontogram" link/button.
 - Clicking a tooth opens the details dialog using already-loaded data — no
   extra fetch for viewing.
 - Editing condition or adding a treatment/planned procedure from within the
