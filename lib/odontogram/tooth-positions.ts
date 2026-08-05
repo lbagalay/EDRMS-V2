@@ -2,8 +2,8 @@ import { isPrimaryTooth, primaryToPermanentSlot } from "./tooth-data";
 
 export type ToothPosition = { x: number; y: number; width: number; height: number };
 
-const HIT_REGION_WIDTH = 6.5;
-const HIT_REGION_HEIGHT = 6.5;
+const HIT_REGION_WIDTH = 5.0;
+const HIT_REGION_HEIGHT = 4.0;
 
 /** Center points as a percentage of public/odontogram/adult-chart.svg,
  * measured directly from the artwork so hit regions land on each tooth. */
