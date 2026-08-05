@@ -127,7 +127,7 @@ export function ToothDetailsDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-lg">
+      <DialogContent className="sm:max-w-lg max-h-[85vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>
             Tooth {toothNumber} · {getToothName(toothNumber)}
@@ -208,7 +208,7 @@ export function ToothDetailsDialog({
           </div>
 
           <div className="border-t border-[#E2E8F0] pt-4">
-            <h3 className="text-sm font-semibold text-slate-900">Add / edit treatment</h3>
+            <h3 className="text-sm font-semibold text-slate-900">Add treatment</h3>
             <div className="mt-2 grid gap-2 sm:grid-cols-2">
               <select
                 value={treatmentId}
