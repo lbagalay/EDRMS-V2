@@ -4,7 +4,7 @@ import path from "node:path";
 export default defineConfig({
   resolve: {
     alias: {
-      "@": path.resolve(__dirname, "."),
+      "@": path.resolve(path.dirname(new URL(import.meta.url).pathname), "."),
     },
   },
   test: {
