@@ -42,9 +42,17 @@ export default async function PatientDetailPage({
   return (
     <main className="space-y-6">
       <section className="rounded-[32px] bg-white p-6 shadow-[0_20px_40px_rgba(24,154,180,0.08)]">
-        <div>
-          <h1 className="text-3xl font-semibold tracking-tight text-[#189AB4]">{patient.firstName} {patient.lastName}</h1>
-          <p className="mt-3 text-sm leading-6 text-slate-600">View and update the patient’s core details.</p>
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h1 className="text-3xl font-semibold tracking-tight text-[#189AB4]">{patient.firstName} {patient.lastName}</h1>
+            <p className="mt-3 text-sm leading-6 text-slate-600">View and update the patient’s core details.</p>
+          </div>
+          <Link
+            href={`/patients/${patient.patientId}/odontogram`}
+            className="inline-flex items-center justify-center rounded-full bg-[#6ED178] px-5 py-3 text-sm font-medium text-white transition hover:bg-[#56b765]"
+          >
+            Odontogram
+          </Link>
         </div>
       </section>
 
