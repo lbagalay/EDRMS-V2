@@ -101,8 +101,8 @@ export function Odontogram({
     status: ProcedureStatus,
   ) {
     setTreatmentRendered((prev) => [
-      ...prev,
       { id: -Date.now(), toothNumber, status, treatment },
+      ...prev,
     ]);
   }
 
@@ -116,7 +116,7 @@ export function Odontogram({
           className="w-fit rounded-2xl border border-[#D8E8EE] bg-[#F8FAFB] px-4 py-2 text-sm outline-none focus:border-[#189AB4] focus:ring-2 focus:ring-[#189AB4]/20"
         >
           <option value="PRIMARY">Primary (baby teeth)</option>
-          <option value="MIXED">Mixed</option>
+          <option value="MIXED">Mixed (shown as full chart)</option>
           <option value="PERMANENT">Permanent</option>
         </select>
       </div>
