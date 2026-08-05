@@ -1,6 +1,6 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath, unstable_cache } from "next/cache";
 import { prisma } from "@/lib/db";
 import { requireSession } from "@/lib/authorize";
 import { visitFormSchema } from "@/lib/validators/visit";
@@ -8,13 +8,24 @@ import { vitalSignsFormSchema } from "@/lib/validators/vital-signs";
 
 type TransactionClient = Parameters<Parameters<typeof prisma.$transaction>[0]>[0];
 
+// The active-treatment catalog changes rarely (only via /treatments), but is
+// read on every patient/odontogram page load. Caching it removes a database
+// round-trip from those pages; createTreatment/updateTreatment/
+// deactivateTreatment/reactivateTreatment invalidate this via revalidateTag.
+const getCachedTreatmentOptions = unstable_cache(
+  async () =>
+    prisma.treatment.findMany({
+      where: { isActive: true },
+      orderBy: { treatmentName: "asc" },
+      select: { treatmentId: true, treatmentName: true, treatmentFee: true },
+    }),
+  ["treatment-options"],
+  { tags: ["treatment-options"] },
+);
+
 export async function listTreatmentOptions() {
   await requireSession();
-  return prisma.treatment.findMany({
-    where: { isActive: true },
-    orderBy: { treatmentName: "asc" },
-    select: { treatmentId: true, treatmentName: true, treatmentFee: true },
-  });
+  return getCachedTreatmentOptions();
 }
 
 export async function createVisit(patientId: number, formData: FormData) {

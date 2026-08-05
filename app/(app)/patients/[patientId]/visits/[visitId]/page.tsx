@@ -15,20 +15,30 @@ export default async function VisitDetailPage({
   }
 
   const { patientId, visitId } = await params;
+  const numericVisitId = Number(visitId);
 
-  const visit = await prisma.visit.findUnique({
-    where: { visitId: Number(visitId) },
-    include: {
-      patient: true,
-      treatmentRendered: { include: { treatment: true } },
-      vitalSigns: { where: { isDeleted: false }, orderBy: { timeTaken: "asc" } },
-    },
-  });
+  // All four are independently keyed off params (visitId/patientId), so none
+  // has to wait on another's result — fetched concurrently instead of as
+  // nested includes on one findUnique, which would issue its round-trips
+  // to the DB one after another.
+  const [visitCore, patient, treatmentRendered, vitalSigns] = await Promise.all([
+    prisma.visit.findUnique({ where: { visitId: numericVisitId } }),
+    prisma.patient.findUnique({ where: { patientId: Number(patientId) } }),
+    prisma.treatmentRendered.findMany({
+      where: { visitId: numericVisitId },
+      include: { treatment: true },
+    }),
+    prisma.vitalSigns.findMany({
+      where: { visitId: numericVisitId, isDeleted: false },
+      orderBy: { timeTaken: "asc" },
+    }),
+  ]);
 
-  if (!visit) {
+  if (!visitCore || !patient) {
     return <div className="text-sm text-slate-600">Visit not found.</div>;
   }
 
+  const visit = { ...visitCore, patient, treatmentRendered, vitalSigns };
   const balance = computeVisitBalance(visit);
 
   return (

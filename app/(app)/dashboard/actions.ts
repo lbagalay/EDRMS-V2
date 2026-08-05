@@ -20,18 +20,6 @@ export async function getTodaysAppointments() {
 
   const { start, end } = todayRangeUTC();
 
-  const allAppts = await db.appointment.findMany({
-    select: { appointmentId: true, dateSchedule: true, name: true },
-    orderBy: { dateSchedule: "desc" },
-    take: 10,
-  });
-
-  console.log(
-    "DEBUG dashboard — range start:", start.toISOString(),
-    "| range end:", end.toISOString(),
-    "| last 10 appointment dates in DB:", allAppts.map((a: (typeof allAppts)[number]) => ({ id: a.appointmentId, name: a.name, date: a.dateSchedule.toISOString() })),
-  );
-
   const appointments = await db.appointment.findMany({
     where: {
       dateSchedule: {

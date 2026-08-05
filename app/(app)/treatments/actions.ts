@@ -3,7 +3,7 @@
 import "server-only";
 
 import { z } from "zod";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, updateTag } from "next/cache";
 import { prisma as db } from "@/lib/db";
 import { requireRole } from "@/lib/authorize";
 
@@ -47,6 +47,7 @@ export async function createTreatment(rawValues: unknown): Promise<ActionResult>
   });
 
   revalidatePath("/treatments");
+  updateTag("treatment-options");
   return { success: true };
 }
 
@@ -70,6 +71,7 @@ export async function updateTreatment(
   });
 
   revalidatePath("/treatments");
+  updateTag("treatment-options");
   return { success: true };
 }
 
@@ -82,6 +84,7 @@ export async function deactivateTreatment(treatmentId: number): Promise<ActionRe
   });
 
   revalidatePath("/treatments");
+  updateTag("treatment-options");
   return { success: true };
 }
 
@@ -94,5 +97,6 @@ export async function reactivateTreatment(treatmentId: number): Promise<ActionRe
   });
 
   revalidatePath("/treatments");
+  updateTag("treatment-options");
   return { success: true };
 }

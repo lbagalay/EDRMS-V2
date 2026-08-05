@@ -4,14 +4,15 @@ import { AppointmentForm } from "./appointment-form";
 import { createAppointment, getBookingCounts, getBookedTimes } from "./actions";
 
 export default async function AppointmentsPage() {
-  const appointments = await db.appointment.findMany({
-    where: { status: { notIn: ["COMPLETED", "CANCELLED"] } },
-    orderBy: [{ dateSchedule: "asc" }, { timeSchedule: "asc" }],
-    take: 50,
-  });
-
   const now = new Date();
-  const initialBookingCounts = await getBookingCounts(now.getUTCFullYear(), now.getUTCMonth() + 1);
+  const [appointments, initialBookingCounts] = await Promise.all([
+    db.appointment.findMany({
+      where: { status: { notIn: ["COMPLETED", "CANCELLED"] } },
+      orderBy: [{ dateSchedule: "asc" }, { timeSchedule: "asc" }],
+      take: 50,
+    }),
+    getBookingCounts(now.getUTCFullYear(), now.getUTCMonth() + 1),
+  ]);
 
   return (
     <main className="space-y-6">

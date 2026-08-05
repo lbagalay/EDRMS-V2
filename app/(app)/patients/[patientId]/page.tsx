@@ -17,25 +17,29 @@ export default async function PatientDetailPage({
   const { patientId } = await params;
   const id = Number(patientId);
 
-  const patient = await prisma.patient.findUnique({
-    where: { patientId: id },
-    include: {
-      appointments: { orderBy: [{ dateSchedule: "desc" }, { timeSchedule: "desc" }] },
-      visits: {
-        where: { isDeleted: false },
-        orderBy: { dateVisit: "desc" },
-        include: { treatmentRendered: { include: { treatment: true } } },
-      },
-    },
-  });
+  // Fetched as separate top-level queries (rather than one findUnique with
+  // nested includes) so they run concurrently: Prisma issues one DB
+  // round-trip per relation level for MySQL, and those were previously
+  // serialized one after another inside a single query.
+  const [patient, appointments, visits, treatments] = await Promise.all([
+    prisma.patient.findUnique({ where: { patientId: id } }),
+    prisma.appointment.findMany({
+      where: { patientId: id },
+      orderBy: [{ dateSchedule: "desc" }, { timeSchedule: "desc" }],
+    }),
+    prisma.visit.findMany({
+      where: { patientId: id, isDeleted: false },
+      orderBy: { dateVisit: "desc" },
+      include: { treatmentRendered: { include: { treatment: true } } },
+    }),
+    listTreatmentOptions(),
+  ]);
 
   if (!patient) {
     return <div className="text-sm text-slate-600">Patient not found.</div>;
   }
-
-  const treatments = await listTreatmentOptions();
-  const totalOutstanding = patient.visits.reduce(
-    (sum: number, v: (typeof patient.visits)[number]) => sum + computeVisitBalance(v),
+  const totalOutstanding = visits.reduce(
+    (sum: number, v: (typeof visits)[number]) => sum + computeVisitBalance(v),
     0,
   );
 
@@ -91,11 +95,11 @@ export default async function PatientDetailPage({
 
       <section className="rounded-[32px] bg-white p-6 shadow-[0_20px_40px_rgba(24,154,180,0.08)]">
         <h2 className="text-xl font-semibold text-[#189AB4]">Visits</h2>
-        {patient.visits.length === 0 ? (
+        {visits.length === 0 ? (
           <p className="mt-2 text-sm leading-6 text-slate-600">No visits recorded yet.</p>
         ) : (
           <div className="mt-4 space-y-3">
-            {patient.visits.map((v: (typeof patient.visits)[number]) => {
+            {visits.map((v: (typeof visits)[number]) => {
               const balance = computeVisitBalance(v);
               return (
                 <Link
@@ -181,11 +185,11 @@ export default async function PatientDetailPage({
 
       <section className="rounded-[32px] bg-white p-6 shadow-[0_20px_40px_rgba(24,154,180,0.08)]">
         <h2 className="text-xl font-semibold text-[#189AB4]">Appointments</h2>
-        {patient.appointments.length === 0 ? (
+        {appointments.length === 0 ? (
           <p className="mt-2 text-sm leading-6 text-slate-600">No appointments on record.</p>
         ) : (
           <div className="mt-4 space-y-3">
-            {patient.appointments.map((a: (typeof patient.appointments)[number]) => (
+            {appointments.map((a: (typeof appointments)[number]) => (
               <div key={a.appointmentId} className="flex items-center justify-between rounded-2xl border border-[#D8E8EE] px-4 py-3 text-sm">
                 <span>
                   {a.dateSchedule.toLocaleDateString()} · {a.timeSchedule.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} — {a.purpose}

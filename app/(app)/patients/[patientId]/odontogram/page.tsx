@@ -18,23 +18,22 @@ export default async function OdontogramPage({
   const { patientId } = await params;
   const id = Number(patientId);
 
-  const patient = await prisma.patient.findUnique({
-    where: { patientId: id },
-    include: {
-      toothRecords: true,
-      treatmentRendered: {
-        where: { toothNumber: { not: null } },
-        include: { treatment: true },
-        orderBy: { id: "desc" },
-      },
-    },
-  });
+  // Separate top-level queries, run concurrently, instead of one findUnique
+  // with nested includes (which issues its DB round-trips one after another).
+  const [patient, toothRecords, treatmentRendered, treatments] = await Promise.all([
+    prisma.patient.findUnique({ where: { patientId: id } }),
+    prisma.toothRecord.findMany({ where: { patientId: id } }),
+    prisma.treatmentRendered.findMany({
+      where: { patientId: id, toothNumber: { not: null } },
+      include: { treatment: true },
+      orderBy: { id: "desc" },
+    }),
+    listTreatmentOptions(),
+  ]);
 
   if (!patient) {
     return <div className="text-sm text-slate-600">Patient not found.</div>;
   }
-
-  const treatments = await listTreatmentOptions();
   const defaultDentitionType = getDentitionType(patient.birthdate);
 
   return (
@@ -62,8 +61,8 @@ export default async function OdontogramPage({
         <Odontogram
           patientId={patient.patientId}
           defaultDentitionType={defaultDentitionType}
-          toothRecords={patient.toothRecords}
-          treatmentRendered={patient.treatmentRendered.map((t: (typeof patient.treatmentRendered)[number]) => ({
+          toothRecords={toothRecords}
+          treatmentRendered={treatmentRendered.map((t: (typeof treatmentRendered)[number]) => ({
             id: t.id,
             toothNumber: t.toothNumber,
             status: t.status,
