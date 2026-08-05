@@ -67,7 +67,7 @@ export default async function OdontogramPage({
             id: t.id,
             toothNumber: t.toothNumber,
             status: t.status,
-            treatment: t.treatment,
+            treatment: { treatmentId: t.treatment.treatmentId, treatmentName: t.treatment.treatmentName },
           }))}
           treatments={treatments.map((t: (typeof treatments)[number]) => ({
             treatmentId: t.treatmentId,
