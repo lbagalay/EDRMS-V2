@@ -27,6 +27,22 @@
     NO_SHOW
   }
 
+  enum ToothCondition {
+    HEALTHY
+    CARIES
+    FILLED
+    MISSING
+    CROWNED
+    ROOT_CANAL
+    EXTRACTED
+    OTHER
+  }
+
+  enum ProcedureStatus {
+    PLANNED
+    COMPLETED
+  }
+
   model Account {
     accountId   Int       @id @default(autoincrement()) @map("account_id")
     username    String    @unique @db.VarChar(255)
@@ -71,6 +87,8 @@
     updatedAt       DateTime      @updatedAt @map("updated_at")
     appointments    Appointment[]
     visits          Visit[]
+    treatmentRendered TreatmentRendered[]
+    toothRecords      ToothRecord[]
 
     @@map("patient")
   }
@@ -123,14 +141,32 @@
   }
 
   model TreatmentRendered {
-    id          Int       @id @default(autoincrement())
-    visitId     Int       @map("visit_id")
-    treatmentId Int       @map("treatment_id")
-    feeAtTime   Decimal?  @map("fee_at_time") @db.Decimal(10, 2)
-    visit       Visit     @relation(fields: [visitId], references: [visitId], onDelete: Cascade)
-    treatment   Treatment @relation(fields: [treatmentId], references: [treatmentId], onDelete: Cascade)
+    id          Int             @id @default(autoincrement())
+    patientId   Int             @map("patient_id")
+    visitId     Int?            @map("visit_id")
+    treatmentId Int             @map("treatment_id")
+    feeAtTime   Decimal?        @map("fee_at_time") @db.Decimal(10, 2)
+    toothNumber Int?            @map("tooth_number")
+    status      ProcedureStatus @default(COMPLETED)
+    patient     Patient         @relation(fields: [patientId], references: [patientId], onDelete: Cascade)
+    visit       Visit?          @relation(fields: [visitId], references: [visitId], onDelete: SetNull)
+    treatment   Treatment       @relation(fields: [treatmentId], references: [treatmentId], onDelete: Cascade)
 
     @@map("treatment_rendered")
+  }
+
+  model ToothRecord {
+    id            Int            @id @default(autoincrement())
+    patientId     Int            @map("patient_id")
+    toothNumber   Int            @map("tooth_number")
+    condition     ToothCondition @default(HEALTHY)
+    conditionNote String?        @map("condition_note") @db.Text
+    dentistNotes  String?        @map("dentist_notes") @db.Text
+    updatedAt     DateTime       @updatedAt @map("updated_at")
+    patient       Patient        @relation(fields: [patientId], references: [patientId], onDelete: Cascade)
+
+    @@unique([patientId, toothNumber])
+    @@map("tooth_record")
   }
 
   model VitalSigns {

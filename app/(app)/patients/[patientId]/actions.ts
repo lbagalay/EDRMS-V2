@@ -63,6 +63,7 @@ export async function createVisit(patientId: number, formData: FormData) {
 
     await tx.treatmentRendered.createMany({
       data: treatments.map((t: (typeof treatments)[number]) => ({
+        patientId,
         visitId: visit.visitId,
         treatmentId: t.treatmentId,
         feeAtTime: t.treatmentFee,
