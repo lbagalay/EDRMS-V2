@@ -57,7 +57,7 @@ export default function SignInPage() {
       <div className="w-full max-w-md rounded-[32px] border border-[#D8E8EE] bg-white p-8 shadow-[0_20px_40px_rgba(24,154,180,0.12)]">
         <Image
           src="/brand/dentalClinicLogo.png"
-          alt="Clam-Pasco Dental Clinic"
+          alt="Demo Dental Clinic"
           width={96}
           height={96}
           className="mx-auto mb-4"

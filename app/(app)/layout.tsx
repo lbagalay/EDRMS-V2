@@ -43,13 +43,13 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         <div className="flex items-center gap-2.5">
           <Image
             src="/brand/clinicLogo.png"
-            alt="Clam-Pasco Dental Clinic"
+            alt="Demo Dental Clinic"
             width={32}
             height={32}
             className="shrink-0 rounded-lg object-contain"
           />
           <h2 className="text-sm font-semibold leading-tight text-[var(--brand-blue)]">
-            Clam-Pasco
+            Demo
             <br />
             Dental Clinic
           </h2>
